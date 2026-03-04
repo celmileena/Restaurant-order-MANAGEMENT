@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from restaurantapp.models import CategoryDB,TableDB, MenuItemDB, OrderDB, OrderItem
 from twilio.rest import Client
+import os
 # Create your views here.
 
 
@@ -67,16 +68,21 @@ def final_place_order(request, table_uuid, order_id):
 
         order.Status = "Pending"
         phone = request.POST.get("phone_number")
+        if not phone:
+
+            return redirect('order_summary', table_uuid=table_uuid, order_id=order.id)
         order.save()
 
         # WHATSAPP MESSAGE
-        account_sid = ''
-        auth_token = ''
+
+
+        account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+        auth_token = os.getenv("TWILIO_AUTH_TOKEN")
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
             body=f"Order Confirmed!\nOrder ID: {order.id}\nTotal: ₹{order.Total_price}",
-            from_='whatsapp:no',
+            from_='whatsapp:+14155238886',
             to=f"whatsapp:{phone}"
         )
 
