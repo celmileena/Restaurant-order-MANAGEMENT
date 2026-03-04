@@ -20,8 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+m8uj#dxcxjg8r36)vs*27q(d2)bqw9w4ebfm-vrj-r4jh+a4f'
-
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'local-secret-key')
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN', '')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
