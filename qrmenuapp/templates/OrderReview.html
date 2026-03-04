@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Order</title>
+
+
+</head>
+
+<body>
+
+<div class="order-card">
+
+<h2>Review Order — Table {{ order.Table.number }}</h2>
+
+<ul>
+{% for i in items %}
+<li>
+    <span>{{ i.menu_item.Name }} × {{ i.quantity }}</span>
+    <span class="price">₹{{ i.price_at_order }}</span>
+</li>
+{% endfor %}
+</ul>
+
+<div class="total">
+Total: ₹{{ order.Total_price }}
+</div>
+
+<form method="POST" action="{% url 'final_place_order' table_uuid order.id %}">
+    {% csrf_token %}
+
+    <label>Special Instructions</label>
+    <textarea name="note" placeholder="Less spicy, no onions..."></textarea>
+    <label>whatsapp no in format +91**********</label>
+    <input type="text" class="num" name="phone_number" placeholder="Enter phone number" required>
+    <button type="submit">Confirm & Place Order </button>
+</form>
+
+</div>
+
+
+
+
+<style>
+body{
+    background:#f5f5f5;
+    font-family:Segoe UI, sans-serif;
+    padding:20px;
+}
+
+.order-card{
+    max-width:500px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+h2{
+    color:#D32F2F;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+ul{
+    list-style:none;
+    padding:0;
+}
+
+ul li{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px dashed #ddd;
+}
+
+.price{
+    color:#555;
+}
+
+.total{
+    font-size:20px;
+    font-weight:bold;
+    text-align:right;
+    margin-top:15px;
+}
+
+label{
+    display:block;
+    margin-top:20px;
+    font-weight:bold;
+}
+
+textarea{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    margin-top:8px;
+    resize:none;
+    height:80px;
+}
+
+button{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    background:#4CAF50;
+    border:none;
+    color:white;
+    font-size:16px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.num{
+height:40px;
+width:200px;
+margin-top:20px;
+}
+
+button:hover{
+    opacity:.9;
+}
+</style>
+</body>
+</html>

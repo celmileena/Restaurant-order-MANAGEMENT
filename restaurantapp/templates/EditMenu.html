@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+{% extends 'Dashboard.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Menu</title>
+</head>
+<body>
+<div class="container">
+  <div class="page-inner">
+    <h3 class="fw-bold mb-3">Edit Menu</h3>
+
+    <form method="POST" action="{% url 'update_menu' mid=data.id %}" enctype="multipart/form-data" class="card p-4 shadow">
+      {% csrf_token %}
+
+      <!-- Menu Name -->
+      <div class="mb-3">
+        <label class="form-label">Menu Item</label>
+        <input type="text" name="menuname" value="{{data.Name}}" class="form-control" >
+      </div>
+
+        <!-- Category Name -->
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select name="menucategory" class="form-control" required>
+
+        <option >{{data.Category}}</option>
+        {% for i in categories %}
+        <option>{{i.Category_Name}}</option>
+        {% endfor %}
+    </select>
+
+      </div>
+
+         <div class="mb-3">
+        <label class="form-label">Price</label>
+        <input type="number" min="0" step="0.01" name="price" value="{{data.Price}}" class="form-control" >
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" rows="4">{{data.Short_Description}}</textarea>
+      </div>
+
+      <!-- Image -->
+      <div class="mb-3">
+
+
+          <img src="{{data.Menu_Image.url}}" alt="" style="width:200px">
+        <input type="file" name="menuimage" class="form-control"  >
+      </div>
+
+      <!-- Status -->
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="available" {% if data.Availability %} checked {% endif %}>
+        <label class="form-check-label">Available</label>
+      </div>
+
+      <!-- Buttons -->
+      <div>
+        <button type="submit" class="btn btn-primary">Update</button>
+
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+    {% for i in messages %}
+
+        {% if i.tags == 'success' %}
+            <script>
+                swal('{{ i }}', '','success')
+            </script>
+
+        {% elif i.tags == 'warning' %}
+            <script>
+                swal('{{ i }}', '','warning')
+            </script>
+
+        {% elif i.tags == 'error' %}
+            <script>
+                swal('{{ i }}', '','error')
+            </script>
+
+        {% elif i.tags == 'info' %}
+            <script>
+                swal('{{ i }}', '','info')
+            </script>
+
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</body>
+{% endblock %}
+</html>

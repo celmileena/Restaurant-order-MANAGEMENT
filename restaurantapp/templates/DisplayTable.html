@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+{% extends 'Dashboard.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Display Table</title>
+</head>
+<body>
+<div class="container">
+  <div class="page-inner">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="fw-bold">Display Table</h3>
+      <a href="{% url 'addtable' %}" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus"></i> Add Table
+      </a>
+    </div>
+
+    <div class="card shadow">
+      <div class="card-body">
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-dark">
+              <tr>
+                <th>Table Number</th>
+                <th>QR code </th>
+                <th>Table UUID </th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in data %}
+              <tr>
+
+                <td class="fw-semibold">{{ i.number }}</td>
+                <td>
+
+                    <img src="{{ i.qr_code.url }}" class="rounded" width="400">
+
+                </td>
+                <td>
+                    <a href="/restaurantQR/menu/{{ i.unique_id }}/" target="_blank">
+                      View Customer Menu
+                    </a>
+                </td>
+
+
+                <td>
+                  <a href="{% url 'edittable' t_id=i.id %}" class="btn btn-sm btn-warning" >
+                    EDIT
+                  </a>
+                  <a href="{% url 'deletetable' tid=i.id%}" class="btn btn-sm btn-danger">
+                    DELETE
+                  </a>
+                </td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+</body>
+{% endblock %}
+</html>

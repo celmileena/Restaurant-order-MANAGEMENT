@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+{% extends 'Dashboard.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Staff</title>
+</head>
+<body>
+<div class="container">
+  <div class="page-inner">
+    <h3 class="fw-bold mb-3">Add Staff</h3>
+
+    <form method="POST" action="{% url 'save_staff' %}" enctype="multipart/form-data" onsubmit="return validateForm()"  class="card p-4 shadow">
+      {% csrf_token %}
+
+
+      <div class="mb-3">
+        <label class="form-label">Staff Username</label>
+        <input type="text" name="username" id="username" class="form-control" >
+          <span id="unameerror" class="text-danger small" ></span>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+       <input type="password" name="password" id="password" class="form-control" >
+
+          <span id="pswderror" class="text-danger small"></span>
+      </div>
+
+
+        <div class="mb-3">
+        <label class="form-label">Confirm Password</label>
+       <input type="password" name="password2" id="password2" class="form-control" >
+
+          <span id="pswderror2" class="text-danger small"></span>
+      </div>
+
+        <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="active"
+
+        <label class="form-check-label">Active</label>
+      </div>
+        <div>
+        <button type="submit" class="btn btn-primary">Create </button>
+        </div>
+
+    </form>
+
+  </div>
+</div>
+
+
+
+<script>
+const uname = document.getElementById("username");
+const pswd = document.getElementById("password");
+const pswd2 = document.getElementById("password2");
+
+uname.addEventListener("input", function(){
+    if(uname.value === ""){
+        document.getElementById("unameerror").innerText = "Username required";
+    } else {
+        document.getElementById("unameerror").innerText = "";
+    }
+});
+
+
+pswd.addEventListener("input", function(){
+    if(pswd.value === ""){
+        document.getElementById("pswderror").innerText = "Password required";
+    }
+    else if(pswd2.value === ""){
+        document.getElementById("pswderror2").innerText = "Confirm Password ";
+    }
+    else if(pswd.value.length < 6){
+        document.getElementById("pswderror").innerText = "Minimum 6 characters required";
+    }
+    else if(pswd2.value.length < 6){
+        document.getElementById("pswderror2").innerText = "password length should be atleast 6 chaacters";
+    }
+    else{
+        document.getElementById("pswderror").innerText = "";
+    }
+});
+
+
+function validateForm(){
+    if(uname.value === ""){
+        document.getElementById("unameerror").innerText = "Username required";
+        return false;
+    }
+
+    if(pswd.value === ""){
+        document.getElementById("pswderror").innerText = "Password required";
+        return false;
+    }
+    else if(pswd2.value === ""){
+        document.getElementById("pswderror2").innerText = "Password required";
+        return false;
+    }
+    else if(pswd.value.length < 6){
+        document.getElementById("pswderror").innerText = "Minimum 6 characters required";
+        return false;
+    }
+    else if(pswd2.value.length < 6){
+        document.getElementById("pswderror2").innerText = "Minimum 6 characters required";
+        return false;
+    }
+    else if(pswd.value !== pswd2.value){
+    document.getElementById("pswderror2").innerText = "Passwords do not match";
+    return false;
+}
+
+}
+</script>
+
+
+
+
+
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+    {% for i in messages %}
+
+        {% if i.tags == 'success' %}
+            <script>
+                swal('{{ i }}', '','success')
+            </script>
+
+        {% elif i.tags == 'warning' %}
+            <script>
+                swal('{{ i }}', '','warning')
+            </script>
+
+        {% elif i.tags == 'error' %}
+            <script>
+                swal('{{ i }}', '','error')
+            </script>
+
+        {% elif i.tags == 'info' %}
+            <script>
+                swal('{{ i }}', '','info')
+            </script>
+
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+</body>
+{% endblock %}
+</html>

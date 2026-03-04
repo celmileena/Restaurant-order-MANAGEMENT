@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="10">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+<title>Kitchen Dashboard</title>
+
+</head>
+
+<body>
+<div class="flex-grow-1">
+    <div class="header">
+        <h1>Kitchen Dashboard</h1>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    </div>
+
+
+    <div class="stats mb-5" >
+        <div class="stat pending">Pending: {{ pending_cnt }}</div>
+        <div class="stat cooking">Cooking: {{ cooking_cnt }}</div>
+
+
+    </div>
+
+    <!--nd-->
+    <div class="orders-container">
+    {% for order in orders %}
+    <div class="order-card {{ order.Status|lower }}">
+
+        <div class="status-badge {{ order.Status|lower }}">
+            {{ order.Status|upper }}
+        </div>
+
+        <h2>Table {{ order.Table.number }}</h2>
+        <p><strong>Order ID:</strong> #{{ order.id }}</p>
+        <p><strong>Waiting:</strong> {{ order.Created_at|timesince }}</p>
+        <p><strong>Items:</strong> {{ order.items.count }}</p>
+        {% if order.Note %}
+        <div class="note"><strong>Note:</strong> {{ order.Note }}</div>
+        {% endif %}
+
+        <ul class="items-list">
+        {% for item in order.items.all %}
+            <li>
+                <span>{{ item.menu_item.Name }}</span>
+                <span class="quantity">{{ item.quantity }}</span>
+
+            </li>
+        {% endfor %}
+        </ul>
+
+        {% if order.Status == 'Pending' %}
+        <form method="POST" action="{% url 'update_status' order.id 'Cooking' %}">
+            {% csrf_token %}
+            <button class="status-btn cooking">Start Cooking</button>
+        </form>
+
+        {% elif order.Status == 'Cooking' %}
+        <form method="POST" action="{% url 'update_status' order.id 'Done' %}">
+            {% csrf_token %}
+            <button class="status-btn done">Order Done </button>
+        </form>
+        {% endif %}
+
+    </div>
+    {% endfor %}
+    </div>
+
+    <audio id="order_sound" src="{% static 'assets/sound/order_sound.mp3' %}"></audio>
+
+
+</div>
+ <footer class="footer mt-5 py-1 bg-light">
+  <div class="container-fluid d-flex justify-content-between align-items-center" style="min-height: 40px; font-size: 0.85rem;">
+
+    <nav>
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link px-2" href="#" style="color:black">RestaurantOrder</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-2" href="#" style="color:black">Help</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-2" href="#" style="color:black">Licenses</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="copyright">
+      2026, made with <i class="fa fa-heart heart text-danger"></i> by
+      <a href="#" style="color:black;text-decoration:none;">RestaurantOrder</a>
+    </div>
+
+    <div>
+      Done by <a target="_blank" href="#" style="color:black;text-decoration:none;">Mileena Celestine</a>.
+    </div>
+  </div>
+</footer>
+</body>
+
+<style>
+:root {
+    --pending-color:#FF9800;
+    --cooking-color:#2196F3;
+    --done-color:#4CAF50;
+    --card-bg:#fff;
+    --bg-color:#f5f5f5;
+    --text-color:#333;
+}
+
+body{
+    background:var(--bg-color);
+    padding:20px;
+    font-family:Segoe UI, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    flex:1;
+}
+
+<!--.header{-->
+<!--    display:flex;-->
+<!--    justify-content:space-between;-->
+<!--    border-bottom:2px solid #ddd;-->
+<!--    margin-bottom:25px;-->
+<!--}-->
+
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:white;
+    padding:15px 25px;
+    border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+    margin-bottom:20px;
+}
+
+.logout-btn{
+    background:green;
+    color:white;
+    padding:10px 20px;
+    text-decoration:none;
+    border-radius:5px;
+}
+
+.orders-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+    gap:20px;
+}
+
+.order-card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    border-left:5px solid var(--pending-color);
+    box-shadow:0 3px 10px rgba(0,0,0,.1);
+}
+
+.order-card.cooking{border-left-color:var(--cooking-color);}
+.order-card.done{border-left-color:var(--done-color);}
+
+.status-badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:15px;
+    font-weight:bold;
+    font-size:12px;
+}
+
+.status-badge.pending{background:#ffe0b2;color:#ff9800;}
+.status-badge.cooking{background:#bbdefb;color:#2196F3;}
+.status-badge.done{background:#c8e6c9;color:#4CAF50;}
+
+.items-list{list-style:none;margin:15px 0;padding:0;}
+.items-list li{display:flex;justify-content:space-between;padding:6px 0;}
+
+.quantity{
+    background:#D32F2F;
+    color:white;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+}
+
+.status-btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+    color:white;
+}
+
+.status-btn.cooking{background:#2196F3;}
+.status-btn.done{background:#4CAF50;}
+
+
+    .stats{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.stat{
+    display:inline-block;
+    padding:6px 14px;
+    border-radius:20px;
+    font-weight:600;
+    font-size:14px;
+    width:auto;
+}
+.stat.pending{
+    background:#E53935;
+    color:white;
+}
+
+.stat.cooking{
+    background:#FDD835;
+    color:black;
+}
+
+</style>
+
+<script>
+const currentPending = {{ pending_cnt }};
+const lastPending = localStorage.getItem("lastPendingCount");
+
+if (lastPending === null) {
+    localStorage.setItem("lastPendingCount", currentPending);
+}
+else {
+    if (currentPending > lastPending) {
+        document.getElementById("order_sound").play().catch(()=>{});
+    }
+    localStorage.setItem("lastPendingCount", currentPending);
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+    {% for i in messages %}
+
+        {% if i.tags == 'success' %}
+            <script>
+                swal('{{ i }}', '','success')
+            </script>
+
+        {% elif i.tags == 'warning' %}
+            <script>
+                swal('{{ i }}', '','warning')
+            </script>
+
+        {% elif i.tags == 'error' %}
+            <script>
+                swal('{{ i }}', '','error')
+            </script>
+
+        {% elif i.tags == 'info' %}
+            <script>
+                swal('{{ i }}', '','info')
+            </script>
+
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+</html>
+
